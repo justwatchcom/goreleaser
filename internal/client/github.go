@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"log"
 	"os"
+	"time"
 
 	"github.com/google/go-github/github"
 	"github.com/goreleaser/goreleaser/context"
@@ -70,11 +71,13 @@ func (c *githubClient) CreateFile(
 
 func (c *githubClient) CreateRelease(ctx *context.Context, body string) (releaseID int, err error) {
 	var release *github.RepositoryRelease
+	name := ctx.Version + " / " + time.Now().Format("2006-01-02")
 	var data = &github.RepositoryRelease{
-		Name:    github.String(ctx.Git.CurrentTag),
-		TagName: github.String(ctx.Git.CurrentTag),
-		Body:    github.String(body),
-		Draft:   github.Bool(ctx.Config.Release.Draft),
+		Name:       github.String(name),
+		TagName:    github.String(ctx.Git.CurrentTag),
+		Body:       github.String(body),
+		Draft:      github.Bool(ctx.Config.Release.Draft),
+		Prerelease: github.Bool(ctx.Config.Release.Prerelase),
 	}
 	release, _, err = c.client.Repositories.GetReleaseByTag(
 		ctx,

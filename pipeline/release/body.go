@@ -9,10 +9,6 @@ import (
 )
 
 const bodyTemplate = `{{ .ReleaseNotes }}
-
----
-Automated with @goreleaser
-Built with {{ .GoVersion }}
 `
 
 func describeBody(ctx *context.Context) (bytes.Buffer, error) {

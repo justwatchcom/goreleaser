@@ -76,8 +76,9 @@ type Archive struct {
 
 // Release config used for the GitHub release
 type Release struct {
-	GitHub Repo `yaml:",omitempty"`
-	Draft  bool `yaml:",omitempty"`
+	GitHub    Repo `yaml:",omitempty"`
+	Draft     bool `yaml:",omitempty"`
+	Prerelase bool `yaml:",omitempty"`
 }
 
 // FPM config

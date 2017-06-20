@@ -3,6 +3,7 @@
 package git
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"log"
@@ -13,6 +14,10 @@ import (
 	"text/template"
 
 	"github.com/goreleaser/goreleaser/context"
+)
+
+var (
+	rePR = regexp.MustCompile(`\(#(\d+)\)$`)
 )
 
 // ErrInvalidVersionFormat is return when the version isnt in a valid format
@@ -98,16 +103,23 @@ func setLog(ctx *context.Context, tag, commit string) (err error) {
 	if ctx.ReleaseNotes != "" {
 		return
 	}
-	var log string
+	target := tag
 	if tag == "" {
-		log, err = getChangelog(commit)
-	} else {
-		log, err = getChangelog(tag)
+		target = commit
 	}
+	rawLog, err := getChangelog(target)
 	if err != nil {
 		return err
 	}
-	ctx.ReleaseNotes = fmt.Sprintf("## Changelog\n\n%v", log)
+	buf := &bytes.Buffer{}
+	scanner := bufio.NewScanner(bytes.NewBufferString(rawLog))
+	for scanner.Scan() {
+		line := scanner.Text()
+		buf.WriteString("* ")
+		buf.WriteString(rePR.ReplaceAllString(line, "[#$1]"))
+		buf.WriteString("\n")
+	}
+	ctx.ReleaseNotes = fmt.Sprintf("## Changelog\n\n%v", buf.String())
 	return nil
 }
 

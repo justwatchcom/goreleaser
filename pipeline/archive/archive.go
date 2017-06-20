@@ -61,12 +61,12 @@ func create(ctx *context.Context, platform, name string) error {
 		return err
 	}
 	for _, f := range files {
-		if err = archive.Add(f, f); err != nil {
+		if err = archive.Add(filepath.Join(name, f), f); err != nil {
 			return err
 		}
 	}
 	var binary = ctx.Config.Build.Binary + ext.For(platform)
-	if err := archive.Add(binary, filepath.Join(folder, binary)); err != nil {
+	if err := archive.Add(filepath.Join(name, binary), filepath.Join(folder, binary)); err != nil {
 		return err
 	}
 	ctx.AddArtifact(file.Name())
