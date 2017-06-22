@@ -23,10 +23,14 @@ func (Pipe) Description() string {
 
 // Run the pipe
 func (Pipe) Run(ctx *context.Context) (err error) {
+	name, err := nameFor(ctx)
+	if err != nil {
+		return err
+	}
 	file, err := os.OpenFile(
 		filepath.Join(
 			ctx.Config.Dist,
-			fmt.Sprintf("%v_SHA256SUMS", ctx.Config.Build.Binary),
+			name,
 		),
 		os.O_APPEND|os.O_WRONLY|os.O_CREATE|os.O_TRUNC,
 		0644,

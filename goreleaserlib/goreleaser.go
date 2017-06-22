@@ -16,24 +16,30 @@ import (
 	"github.com/goreleaser/goreleaser/pipeline/brew"
 	"github.com/goreleaser/goreleaser/pipeline/build"
 	"github.com/goreleaser/goreleaser/pipeline/checksums"
+	"github.com/goreleaser/goreleaser/pipeline/cleanup"
 	"github.com/goreleaser/goreleaser/pipeline/debug"
 	"github.com/goreleaser/goreleaser/pipeline/defaults"
 	"github.com/goreleaser/goreleaser/pipeline/env"
 	"github.com/goreleaser/goreleaser/pipeline/fpm"
 	"github.com/goreleaser/goreleaser/pipeline/git"
+	"github.com/goreleaser/goreleaser/pipeline/hooks"
 	"github.com/goreleaser/goreleaser/pipeline/release"
+	"github.com/goreleaser/goreleaser/pipeline/source"
 )
 
 var pipes = []pipeline.Pipe{
-	defaults.Pipe{},  // load default configs
-	git.Pipe{},       // get and validate git repo state
-	env.Pipe{},       // load and validate environment variables
+	defaults.Pipe{}, // load default configs
+	cleanup.Pipe{},
+	git.Pipe{}, // get and validate git repo state
+	env.Pipe{}, // load and validate environment variables
+	source.Pipe{},
 	build.Pipe{},     // build
 	archive.Pipe{},   // archive (tar.gz, zip, etc)
 	fpm.Pipe{},       // archive via fpm (deb, rpm, etc)
 	checksums.Pipe{}, // checksums of the files
 	release.Pipe{},   // release to github
 	brew.Pipe{},      // push to brew tap
+	hooks.Pipe{},     // run global hooks
 	debug.Pipe{},     // print debug info
 }
 

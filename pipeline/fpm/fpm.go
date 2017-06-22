@@ -3,12 +3,12 @@ package fpm
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os/exec"
 	"path/filepath"
 
 	"github.com/goreleaser/goreleaser/context"
-	"golang.org/x/sync/errgroup"
 )
 
 var goarchToUnix = map[string]string{
@@ -38,7 +38,7 @@ func (Pipe) Run(ctx *context.Context) error {
 		return ErrNoFPM
 	}
 
-	var g errgroup.Group
+	//var g errgroup.Group
 	for _, format := range ctx.Config.FPM.Formats {
 		format := format
 		for _, goarch := range ctx.Config.Build.Goarch {
@@ -47,12 +47,16 @@ func (Pipe) Run(ctx *context.Context) error {
 			}
 			archive := ctx.Archives["linux"+goarch]
 			arch := goarchToUnix[goarch]
-			g.Go(func() error {
-				return create(ctx, format, archive, arch)
-			})
+			//g.Go(func() error {
+			//	return create(ctx, format, archive, arch)
+			//})
+			if err := create(ctx, format, archive, arch); err != nil {
+				return err
+			}
 		}
 	}
-	return g.Wait()
+	//return g.Wait()
+	return nil
 }
 
 func create(ctx *context.Context, format, archive, arch string) error {
@@ -98,8 +102,9 @@ func create(ctx *context.Context, format, archive, arch string) error {
 	// binary=/usr/local/bin/binary
 	options = append(options, name+"="+filepath.Join("/usr/local/bin", name))
 
-	if out, err := exec.Command("fpm", options...).CombinedOutput(); err != nil {
-		return errors.New(string(out))
+	cmd := exec.Command("fpm", options...)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("fpm failed %s %+v\n%v", cmd.Path, cmd.Args, string(out))
 	}
 	ctx.AddArtifact(file)
 	return nil

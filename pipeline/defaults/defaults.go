@@ -14,6 +14,10 @@ const NameTemplate = "{{ .Binary }}_{{.Version}}_{{ .Os }}_{{ .Arch }}{{ if .Arm
 // SnapshotNameTemplate represents the default format for snapshot release names.
 const SnapshotNameTemplate = "SNAPSHOT-{{ .Commit }}"
 
+const ChecksumNameTemplate = "{{.Binary}}_{{.Version}}_SHA256SUMS"
+
+const SourceNameTemplate = "{{.Binary}}-{{.Version}}"
+
 // Pipe for brew deployment
 type Pipe struct{}
 
@@ -27,6 +31,12 @@ func (Pipe) Run(ctx *context.Context) error {
 	ctx.Config.Dist = "dist"
 	if ctx.Config.Snapshot.NameTemplate == "" {
 		ctx.Config.Snapshot.NameTemplate = SnapshotNameTemplate
+	}
+	if ctx.Config.Source.NameTemplate == "" {
+		ctx.Config.Source.NameTemplate = SourceNameTemplate
+	}
+	if ctx.Config.Checksum.NameTemplate == "" {
+		ctx.Config.Checksum.NameTemplate = ChecksumNameTemplate
 	}
 	if err := setReleaseDefaults(ctx); err != nil {
 		return err

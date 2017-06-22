@@ -74,11 +74,18 @@ type Archive struct {
 	Files           []string          `yaml:",omitempty"`
 }
 
+// Source config used for the source archives
+type Source struct {
+	Format       string   `yaml:",omitempty"`
+	NameTemplate string   `yaml:"name_template,omitempty"`
+	Excludes     []string `yaml:",omitempty"`
+}
+
 // Release config used for the GitHub release
 type Release struct {
-	GitHub    Repo `yaml:",omitempty"`
-	Draft     bool `yaml:",omitempty"`
-	Prerelase bool `yaml:",omitempty"`
+	GitHub     Repo `yaml:",omitempty"`
+	Draft      bool `yaml:",omitempty"`
+	Prerelease bool `yaml:",omitempty"`
 }
 
 // FPM config
@@ -98,14 +105,26 @@ type Snapshot struct {
 	NameTemplate string `yaml:"name_template,omitempty"`
 }
 
+type Checksum struct {
+	NameTemplate string `yaml:"name_template,omitempty"`
+}
+
+type Cleanup struct {
+	Hooks []string `yaml:",omitempty"`
+}
+
 // Project includes all project configuration
 type Project struct {
 	Release  Release  `yaml:",omitempty"`
 	Brew     Homebrew `yaml:",omitempty"`
 	Build    Build    `yaml:",omitempty"`
 	Archive  Archive  `yaml:",omitempty"`
+	Source   Source   `yaml:",omitempty"`
 	FPM      FPM      `yaml:",omitempty"`
 	Snapshot Snapshot `yaml:",omitempty"`
+	Hooks    Hooks    `yaml:",omitempty"`
+	Checksum Checksum `yaml:",omitempty"`
+	Cleanup  Cleanup  `yaml:",omitempty"`
 
 	// test only property indicating the path to the dist folder
 	Dist string `yaml:"-"`

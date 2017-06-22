@@ -90,6 +90,9 @@ func (Pipe) Description() string {
 
 // Run the pipe
 func (Pipe) Run(ctx *context.Context) error {
+	if ctx.Config.Release.Draft || ctx.Config.Release.Prerelease {
+		return nil
+	}
 	return doRun(ctx, client.NewGitHub(ctx))
 }
 

@@ -24,7 +24,7 @@ func main() {
 		cli.StringFlag{
 			Name:  "config, file, c, f",
 			Usage: "Load configuration from `FILE`",
-			Value: "goreleaser.yml",
+			Value: ".goreleaser.yml",
 		},
 		cli.StringFlag{
 			Name:  "release-notes",
@@ -56,7 +56,7 @@ func main() {
 			Aliases: []string{"i"},
 			Usage:   "generate goreleaser.yml",
 			Action: func(c *cli.Context) error {
-				var filename = "goreleaser.yml"
+				var filename = ".goreleaser.yml"
 				if err := goreleaserlib.InitProject(filename); err != nil {
 					return cli.NewExitError(err.Error(), 1)
 				}
