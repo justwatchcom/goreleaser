@@ -42,6 +42,10 @@ func main() {
 			Name:  "snapshot",
 			Usage: "Generate an unversioned snapshot release",
 		},
+		cli.BoolFlag{
+			Name:  "prerelease",
+			Usage: "Genrate an pre-release (release candidate)",
+		},
 	}
 	app.Action = func(c *cli.Context) error {
 		log.Printf("Running goreleaser %v\n", version)

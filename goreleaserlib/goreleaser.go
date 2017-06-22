@@ -84,6 +84,7 @@ func Release(flags Flags) error {
 		log.Println("Publishing disabled in snapshot mode")
 		ctx.Publish = false
 	}
+	ctx.Prerelease = flags.Bool("prerelease")
 	for _, pipe := range pipes {
 		log.Println(pipe.Description())
 		log.SetPrefix(" -> ")

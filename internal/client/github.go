@@ -77,7 +77,7 @@ func (c *githubClient) CreateRelease(ctx *context.Context, body string) (release
 		TagName:    github.String(ctx.Git.CurrentTag),
 		Body:       github.String(body),
 		Draft:      github.Bool(ctx.Config.Release.Draft),
-		Prerelease: github.Bool(ctx.Config.Release.Prerelease),
+		Prerelease: github.Bool(ctx.Prerelease),
 	}
 	release, _, err = c.client.Repositories.GetReleaseByTag(
 		ctx,

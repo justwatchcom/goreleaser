@@ -34,6 +34,7 @@ type Context struct {
 	Validate     bool
 	Publish      bool
 	Snapshot     bool
+	Prerelease   bool
 }
 
 var lock sync.Mutex
