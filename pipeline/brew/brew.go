@@ -5,6 +5,7 @@ package brew
 import (
 	"bytes"
 	"errors"
+	"io/ioutil"
 	"log"
 	"path/filepath"
 	"strings"
@@ -26,6 +27,13 @@ const formula = `class {{ .Name }} < Formula
   url "https://github.com/{{ .Repo.Owner }}/{{ .Repo.Name }}/releases/download/{{ .Tag }}/{{ .File }}.{{ .Format }}"
   version "{{ .Version }}"
   sha256 "{{ .SHA256 }}"
+  head "https://github.com/{{ .Repo.Owner }}/{{ .Repo.Name }}.git"
+
+  {{- if .BuildDependencies }}
+  {{ range $index, $element := .BuildDependencies }}
+  depends_on "{{ . }}" => :build
+  {{- end }}
+  {{- end }}
 
   {{- if .Dependencies }}
   {{ range $index, $element := .Dependencies }}
@@ -39,6 +47,12 @@ const formula = `class {{ .Name }} < Formula
   {{- end }}
   {{- end }}
 
+  {{- if .Special }}
+  {{- range $index, $element := .Special }}
+  {{ . -}}
+  {{- end }}
+  {{- end }}
+
   def install
     {{- range $index, $element := .Install }}
     {{ . -}}
@@ -47,8 +61,11 @@ const formula = `class {{ .Name }} < Formula
 
   {{- if .Caveats }}
 
-  def caveats
-    "{{ .Caveats }}"
+  def caveats; <<-EOS.undent
+    {{- range $index, $element := .Caveats }}
+    {{ . -}}
+    {{- end }}
+  EOS
   end
   {{- end }}
 
@@ -56,28 +73,41 @@ const formula = `class {{ .Name }} < Formula
 
   def plist; <<-EOS.undent
     {{ .Plist }}
-	EOS
+  EOS
   end
   {{- end }}
+
+  {{- if .Test }}
+  test do
+  {{- range $index, $element := .Test }}
+    {{ . -}}
+  {{- end }}
+  end
+  {{- end }}
+
 end
 `
 
 type templateData struct {
-	Name         string
-	Desc         string
-	Homepage     string
-	Repo         config.Repo // FIXME: will not work for anything but github right now.
-	Tag          string
-	Version      string
-	Binary       string
-	Caveats      string
-	File         string
-	Format       string
-	SHA256       string
-	Plist        string
-	Install      []string
-	Dependencies []string
-	Conflicts    []string
+	Name              string
+	Desc              string
+	Homepage          string
+	Head              string
+	Repo              config.Repo // FIXME: will not work for anything but github right now.
+	Tag               string
+	Version           string
+	Binary            string
+	Caveats           []string
+	File              string
+	Format            string
+	SHA256            string
+	Plist             string
+	Install           []string
+	Dependencies      []string
+	BuildDependencies []string
+	Conflicts         []string
+	Test              []string
+	Special           []string
 }
 
 // Pipe for brew deployment
@@ -97,6 +127,15 @@ func (Pipe) Run(ctx *context.Context) error {
 }
 
 func doRun(ctx *context.Context, client client.Client) error {
+	path := filepath.Join(ctx.Config.Brew.Folder, ctx.Config.Build.Binary+".rb")
+	log.Println("Pushing", path, "to", ctx.Config.Brew.GitHub.String())
+	content, err := buildFormula(ctx, client)
+	if err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(filepath.Join(ctx.Config.Dist, ctx.Config.Build.Binary+".rb"), content.Bytes(), 0644); err != nil {
+		return err
+	}
 	if !ctx.Publish {
 		log.Println("Skipped because --skip-publish is set")
 		return nil
@@ -108,12 +147,6 @@ func doRun(ctx *context.Context, client client.Client) error {
 	if ctx.Config.Release.Draft {
 		log.Println("Skipped because release is marked as draft")
 		return nil
-	}
-	path := filepath.Join(ctx.Config.Brew.Folder, ctx.Config.Build.Binary+".rb")
-	log.Println("Pushing", path, "to", ctx.Config.Brew.GitHub.String())
-	content, err := buildFormula(ctx, client)
-	if err != nil {
-		return err
 	}
 	return client.CreateFile(ctx, content, path)
 }
@@ -151,21 +184,24 @@ func dataFor(ctx *context.Context, client client.Client) (result templateData, e
 		return
 	}
 	return templateData{
-		Name:         formulaNameFor(ctx.Config.Build.Binary),
-		Desc:         ctx.Config.Brew.Description,
-		Homepage:     ctx.Config.Brew.Homepage,
-		Repo:         ctx.Config.Release.GitHub,
-		Tag:          ctx.Git.CurrentTag,
-		Version:      ctx.Version,
-		Binary:       ctx.Config.Build.Binary,
-		Caveats:      ctx.Config.Brew.Caveats,
-		File:         file,
-		Format:       ctx.Config.Archive.Format, // TODO this can be broken by format_overrides
-		SHA256:       sum,
-		Dependencies: ctx.Config.Brew.Dependencies,
-		Conflicts:    ctx.Config.Brew.Conflicts,
-		Plist:        ctx.Config.Brew.Plist,
-		Install:      strings.Split(ctx.Config.Brew.Install, "\n"),
+		Name:              formulaNameFor(ctx.Config.Build.Binary),
+		Desc:              ctx.Config.Brew.Description,
+		Homepage:          ctx.Config.Brew.Homepage,
+		Repo:              ctx.Config.Release.GitHub,
+		Tag:               ctx.Git.CurrentTag,
+		Version:           ctx.Version,
+		Binary:            ctx.Config.Build.Binary,
+		Caveats:           strings.Split(ctx.Config.Brew.Caveats, "\n"),
+		File:              file,
+		Format:            ctx.Config.Archive.Format, // TODO this can be broken by format_overrides
+		SHA256:            sum,
+		Dependencies:      ctx.Config.Brew.Dependencies,
+		BuildDependencies: ctx.Config.Brew.BuildDependencies,
+		Conflicts:         ctx.Config.Brew.Conflicts,
+		Plist:             ctx.Config.Brew.Plist,
+		Install:           strings.Split(ctx.Config.Brew.Install, "\n"),
+		Test:              strings.Split(ctx.Config.Brew.Test, "\n"),
+		Special:           strings.Split(ctx.Config.Brew.Special, "\n"),
 	}, err
 }
 

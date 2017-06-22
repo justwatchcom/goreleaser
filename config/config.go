@@ -23,15 +23,19 @@ func (r Repo) String() string {
 
 // Homebrew contains the brew section
 type Homebrew struct {
-	GitHub       Repo     `yaml:",omitempty"`
-	Folder       string   `yaml:",omitempty"`
-	Caveats      string   `yaml:",omitempty"`
-	Plist        string   `yaml:",omitempty"`
-	Install      string   `yaml:",omitempty"`
-	Dependencies []string `yaml:",omitempty"`
-	Conflicts    []string `yaml:",omitempty"`
-	Description  string   `yaml:",omitempty"`
-	Homepage     string   `yaml:",omitempty"`
+	GitHub            Repo     `yaml:",omitempty"`
+	Folder            string   `yaml:",omitempty"`
+	Caveats           string   `yaml:",omitempty"`
+	Head              string   `yaml:",omitempty"`
+	Plist             string   `yaml:",omitempty"`
+	Install           string   `yaml:",omitempty"`
+	Dependencies      []string `yaml:",omitempty"`
+	BuildDependencies []string `yaml:"build_dependencies,omitempty"`
+	Conflicts         []string `yaml:",omitempty"`
+	Description       string   `yaml:",omitempty"`
+	Homepage          string   `yaml:",omitempty"`
+	Test              string   `yaml:",omitempty"`
+	Special           string   `yaml:",omitempty"`
 }
 
 // Hooks define actions to run before and/or after something

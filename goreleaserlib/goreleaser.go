@@ -17,7 +17,6 @@ import (
 	"github.com/goreleaser/goreleaser/pipeline/build"
 	"github.com/goreleaser/goreleaser/pipeline/checksums"
 	"github.com/goreleaser/goreleaser/pipeline/cleanup"
-	"github.com/goreleaser/goreleaser/pipeline/debug"
 	"github.com/goreleaser/goreleaser/pipeline/defaults"
 	"github.com/goreleaser/goreleaser/pipeline/env"
 	"github.com/goreleaser/goreleaser/pipeline/fpm"
@@ -40,7 +39,7 @@ var pipes = []pipeline.Pipe{
 	release.Pipe{},   // release to github
 	brew.Pipe{},      // push to brew tap
 	hooks.Pipe{},     // run global hooks
-	debug.Pipe{},     // print debug info
+	//debug.Pipe{},     // print debug info
 }
 
 func init() {
