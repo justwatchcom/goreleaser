@@ -24,7 +24,7 @@ var ErrNoDarwin64Build = errors.New("brew tap requires a darwin amd64 build")
 const formula = `class {{ .Name }} < Formula
   desc "{{ .Desc }}"
   homepage "{{ .Homepage }}"
-  url "https://github.com/{{ .Repo.Owner }}/{{ .Repo.Name }}/releases/download/{{ .Tag }}/{{ .File }}.{{ .Format }}"
+  url "https://github.com/{{ .Repo.Owner }}/{{ .Repo.Name }}/releases/download/{{ .Tag }}/{{ .File }}"
   version "{{ .Version }}"
   sha256 "{{ .SHA256 }}"
   head "https://github.com/{{ .Repo.Owner }}/{{ .Repo.Name }}.git"
@@ -170,14 +170,10 @@ func doBuildFormula(data templateData) (bytes.Buffer, error) {
 }
 
 func dataFor(ctx *context.Context, client client.Client) (result templateData, err error) {
-	file := ctx.Archives["darwinamd64"]
-	if file == "" {
-		return result, ErrNoDarwin64Build
-	}
 	sum, err := checksum.SHA256(
 		filepath.Join(
 			ctx.Config.Dist,
-			file+"."+ctx.Config.Archive.Format,
+			ctx.Config.Brew.SourceTarball,
 		),
 	)
 	if err != nil {
@@ -192,7 +188,7 @@ func dataFor(ctx *context.Context, client client.Client) (result templateData, e
 		Version:           ctx.Version,
 		Binary:            ctx.Config.Build.Binary,
 		Caveats:           strings.Split(ctx.Config.Brew.Caveats, "\n"),
-		File:              file,
+		File:              ctx.Config.Brew.SourceTarball,
 		Format:            ctx.Config.Archive.Format, // TODO this can be broken by format_overrides
 		SHA256:            sum,
 		Dependencies:      ctx.Config.Brew.Dependencies,

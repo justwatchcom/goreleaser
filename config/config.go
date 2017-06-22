@@ -36,6 +36,7 @@ type Homebrew struct {
 	Homepage          string   `yaml:",omitempty"`
 	Test              string   `yaml:",omitempty"`
 	Special           string   `yaml:",omitempty"`
+	SourceTarball     string   `yaml:"-"`
 }
 
 // Hooks define actions to run before and/or after something

@@ -37,6 +37,7 @@ func create(ctx *context.Context) error {
 		return err
 	}
 	var file = filepath.Join(ctx.Config.Dist, name+".tar.gz")
+	ctx.Config.Brew.SourceTarball = name + ".tar.gz"
 	fmt.Printf(" -> Building %s\n", file)
 	args := make([]string, 0, len(ctx.Config.Source.Excludes)+4)
 	for _, ex := range ctx.Config.Source.Excludes {
