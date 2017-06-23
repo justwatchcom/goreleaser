@@ -48,6 +48,7 @@ func (Pipe) Run(ctx *context.Context) error {
 			ctx.Config.Build.Binary,
 		)
 	}
+	setSourceDefaults(ctx)
 	return setArchiveDefaults(ctx)
 }
 
@@ -101,6 +102,17 @@ func setArchiveDefaults(ctx *context.Context) error {
 			"README*",
 			"changelog*",
 			"CHANGELOG*",
+		}
+	}
+	return nil
+}
+
+func setSourceDefaults(ctx *context.Context) error {
+	if len(ctx.Config.Source.Excludes) == 0 {
+		ctx.Config.Source.Excludes = []string{
+			"*/.git/",
+			".git/",
+			"*/dist/",
 		}
 	}
 	return nil

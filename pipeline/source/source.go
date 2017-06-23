@@ -2,6 +2,7 @@ package source
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -39,6 +40,9 @@ func create(ctx *context.Context) error {
 	var file = filepath.Join(ctx.Config.Dist, name+".tar.gz")
 	ctx.Config.Brew.SourceTarball = name + ".tar.gz"
 	fmt.Printf(" -> Building %s\n", file)
+	if err := ioutil.WriteFile("COMMIT", []byte(ctx.Git.Commit), 0644); err != nil {
+		return err
+	}
 	args := make([]string, 0, len(ctx.Config.Source.Excludes)+4)
 	for _, ex := range ctx.Config.Source.Excludes {
 		args = append(args, "--exclude="+ex)
@@ -52,5 +56,6 @@ func create(ctx *context.Context) error {
 		return fmt.Errorf("Source step failed: %s %+v\n%v", cmd.Path, cmd.Args, string(out))
 	}
 	ctx.AddArtifact(file)
+	os.Remove("COMMIT")
 	return nil
 }
