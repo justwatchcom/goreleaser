@@ -97,6 +97,14 @@ func create(ctx *context.Context, format, archive, arch string) error {
 	for _, conflict := range ctx.Config.FPM.Conflicts {
 		options = append(options, "--conflicts", conflict)
 	}
+	if format == "deb" {
+		for _, dep := range ctx.Config.FPM.Recommends {
+			options = append(options, "--deb-recommends", dep)
+		}
+		for _, dep := range ctx.Config.FPM.Suggests {
+			options = append(options, "--deb-suggests", dep)
+		}
+	}
 
 	// This basically tells fpm to put the binary in the /usr/local/bin
 	// binary=/usr/local/bin/binary

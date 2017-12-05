@@ -97,6 +97,8 @@ type FPM struct {
 	Formats      []string `yaml:",omitempty"`
 	Dependencies []string `yaml:",omitempty"`
 	Conflicts    []string `yaml:",omitempty"`
+	Recommends   []string `yaml:",omitempty"`
+	Suggests     []string `yaml:",omitempty"`
 	Vendor       string   `yaml:",omitempty"`
 	Homepage     string   `yaml:",omitempty"`
 	Maintainer   string   `yaml:",omitempty"`
