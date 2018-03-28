@@ -28,6 +28,8 @@ func (t Type) String() string {
 		return "Checksum"
 	case Signature:
 		return "Signature"
+	case Source:
+		return "Source"
 	default:
 		return fmt.Sprintf("Unknown (%d)", t)
 	}

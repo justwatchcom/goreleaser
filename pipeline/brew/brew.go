@@ -175,7 +175,7 @@ func dataFor(ctx *context.Context, client client.Client, artifact artifact.Artif
 		Repo:              ctx.Config.Release.GitHub,
 		Tag:               ctx.Git.CurrentTag,
 		Version:           ctx.Version,
-		Caveats:           cfg.Caveats,
+		Caveats:           split(cfg.Caveats),
 		File:              artifact.Name,
 		SHA256:            sum,
 		Dependencies:      cfg.Dependencies,

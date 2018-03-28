@@ -10,7 +10,7 @@ type templateData struct {
 	Repo              config.Repo // FIXME: will not work for anything but github right now.
 	Tag               string
 	Version           string
-	Caveats           string
+	Caveats           []string
 	File              string
 	SHA256            string
 	Plist             string
