@@ -22,6 +22,7 @@ import (
 	"github.com/goreleaser/goreleaser/pipeline/build"
 	"github.com/goreleaser/goreleaser/pipeline/changelog"
 	"github.com/goreleaser/goreleaser/pipeline/checksums"
+	"github.com/goreleaser/goreleaser/pipeline/cleanup"
 	"github.com/goreleaser/goreleaser/pipeline/debug"
 	"github.com/goreleaser/goreleaser/pipeline/defaults"
 	"github.com/goreleaser/goreleaser/pipeline/dist"
@@ -45,6 +46,7 @@ var (
 
 var pipes = []Piper{
 	defaults.Pipe{},        // load default configs
+	cleanup.Pipe{},         // cleanup left overs before build
 	dist.Pipe{},            // ensure ./dist is clean
 	git.Pipe{},             // get and validate git repo state
 	effectiveconfig.Pipe{}, // writes the actual config (with defaults et al set) to dist
