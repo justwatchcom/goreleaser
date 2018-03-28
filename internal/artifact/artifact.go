@@ -2,6 +2,7 @@
 package artifact
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/apex/log"
@@ -10,6 +11,27 @@ import (
 // Type defines the type of an artifact
 //go:generate stringer -type=Type
 type Type int
+
+func (t Type) String() string {
+	switch t {
+	case UploadableArchive:
+		return "UploadableArchive"
+	case UploadableBinary:
+		return "UploadableBinary"
+	case Binary:
+		return "Binary"
+	case LinuxPackage:
+		return "LinuxPackage"
+	case DockerImage:
+		return "DockerImage"
+	case Checksum:
+		return "Checksum"
+	case Signature:
+		return "Signature"
+	default:
+		return fmt.Sprintf("Unknown (%d)", t)
+	}
+}
 
 const (
 	// UploadableArchive a tar.gz/zip archive to be uploaded
