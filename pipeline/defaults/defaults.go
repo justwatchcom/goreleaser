@@ -23,6 +23,7 @@ import (
 	"github.com/goreleaser/goreleaser/pipeline/sign"
 	"github.com/goreleaser/goreleaser/pipeline/snapcraft"
 	"github.com/goreleaser/goreleaser/pipeline/snapshot"
+	"github.com/goreleaser/goreleaser/pipeline/source"
 )
 
 // Pipe that sets the defaults
@@ -58,6 +59,7 @@ var defaulters = []Defaulter{
 	brew.Pipe{},
 	scoop.Pipe{},
 	debug.Pipe{},
+	source.Pipe{},
 }
 
 // Run the pipe
