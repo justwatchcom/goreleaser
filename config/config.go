@@ -217,6 +217,7 @@ type Filters struct {
 type Changelog struct {
 	Filters Filters `yaml:",omitempty"`
 	Sort    string  `yaml:",omitempty"`
+	Extract string  `yaml:",omitempty"`
 }
 
 // EnvFiles holds paths to files that contains environment variables
