@@ -102,7 +102,7 @@ func (c *githubClient) CreateRelease(ctx *context.Context, body string) (release
 		)
 	}
 	log.Printf("Release updated: %v\n", release.GetHTMLURL())
-	return release.GetID(), err
+	return int(release.GetID()), err
 }
 
 func (c *githubClient) Upload(
@@ -115,7 +115,7 @@ func (c *githubClient) Upload(
 		ctx,
 		ctx.Config.Release.GitHub.Owner,
 		ctx.Config.Release.GitHub.Name,
-		releaseID,
+		int64(releaseID),
 		&github.UploadOptions{
 			Name: name,
 		},
